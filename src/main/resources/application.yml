@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/demo?useSSL=false
-    username: root
-    password: Mummy@papa123
+    username: /*enter your userName */
+    password: /* enter your password*/
   jpa:
     general-ddl: true
     show-sql: false
