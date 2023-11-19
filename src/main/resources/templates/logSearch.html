@@ -1,0 +1,368 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" th:fragment="content">
+<!--begin::Head-->
+<head>
+    <style>
+
+    .scrollable-table {
+    max-height: 300px; /* Set a maximum height for the table to enable scrolling */
+    overflow-y: auto; /* Add a vertical scrollbar */
+    }
+    .highlight {
+            background-color: yellow;
+        }
+        .no-scroll {
+        overflow: hidden;
+    }
+
+    </style>
+    <!--    <base href="../">-->
+    <meta charset="utf-8"/>
+    <title>Dashboard</title>
+    <meta name="description" content="Basic datatables examples"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700"/>
+    <link href="https://cdn.jsdelivr.net/gh/paytail-com/admin-js/plugins.bundle.css?v=7.0.4" rel="stylesheet"
+          type="text/css"/>
+    <link href="https://cdn.jsdelivr.net/gh/paytail-com/admin-js/style.bundle.css?v=7.0.4" rel="stylesheet"
+          type="text/css"/>
+    <link rel="shortcut icon" href="images/favicon.png"/>
+    <!--    <script th:src="@{/./js/jquery.dataTables.min.js}"></script>-->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+    <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body"
+      class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+<!--begin::Main-->
+<!--begin::Header Mobile-->
+<div id="kt_header_mobile" class="header-mobile align-items-center header-mobile-fixed">
+    <!--begin::Logo-->
+    <!--    <a href="lms-app/">-->
+    <!--        <img alt="Logo" src="images/favicon.png"/>-->
+    <!--    </a>-->
+    <!--end::Logo-->
+    <!--begin::Toolbar-->
+    <div class="d-flex align-items-center">
+        <!--begin::Header Menu Mobile Toggle-->
+        <button class="btn p-0 burger-icon ml-4" id="kt_header_mobile_toggle">
+            <span></span>
+        </button>
+        <!--end::Header Menu Mobile Toggle-->
+    </div>
+    <!--end::Toolbar-->
+</div>
+<!--end::Header Mobile-->
+<div class="d-flex flex-column flex-root">
+    <!--begin::Page-->
+    <div class="d-flex flex-row flex-column-fluid page">
+        <!--begin::Aside-->
+
+        <!--end::Aside-->
+        <!--begin::Wrapper-->
+        <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+            <!--begin::Header-->
+            <!--end::Header-->
+            <!--begin::Content-->
+            <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                <!--begin::Subheader-->
+                <div class="subheader py-2 py-lg-4 subheader-solid" id="kt_subheader">
+                    <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+                        <!--begin::Info-->
+                        <div class="d-flex align-items-center flex-wrap mr-1">
+                            <!--begin::Page Heading-->
+                            <div class="d-flex align-items-baseline mr-5">
+                                <!--begin::Page Title-->
+                                <h5 class="text-dark font-weight-bold my-2 mr-5"></h5>
+                                <!--end::Page Title-->
+                                <!--begin::Breadcrumb-->
+                                <!--end::Breadcrumb-->
+                            </div>
+                            <!--end::Page Heading-->
+                        </div>
+                        <!--end::Info-->
+                        <!--begin::Toolbar-->
+                        <div class="d-flex align-items-center">
+                        </div>
+                        <!--end::Toolbar-->
+                    </div>
+                </div>
+                <!--end::Subheader-->
+                <!--begin::Entry-->
+                <div class="d-flex flex-column-fluid">
+                    <!--begin::Container-->
+                    <div class="container">
+                        <!--begin::Notice-->
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <!--begin::Card-->
+
+                                <!--end::Card-->
+                            </div>
+                            <div class="col-lg-6">
+                                <!--begin::Card-->
+
+                                <div class="card card-custom gutter-b example example-compact">
+                                    <div class="card-header"
+                                         style="background-color: aliceblue;justify-content: center;">
+                                        <h2 class="card-title" style="font-size: 25px; ">Search Logs</h2>
+                                    </div>
+                                    <div class="card-body" style="align-self: center; ">
+                                        <h2 class="card-label" style="margin-top: 10px;">
+                                            <input type="text" class="form-class"
+                                                   placeholder="Filter your data using Keywords"
+                                                   id="keyword" style=" font-size: 20px; width: 600px; "
+                                                   th:value="${keyword}" onkeyup="highlightSearchText()"/>
+                                        </h2>
+                                    </div>
+                                    <div class="row-lg-3">
+                                        <div class="card-header"
+                                             style="background-color: aliceblue;text-align: center">
+                                            <!--begin::Actions-->
+                                            <button class="btn btn-primary font-weight-bold btn-sm" type="button"
+                                                    data-toggle="modal"
+                                                    data-target="#filterModel">Filter
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--end::Card-->
+                            </div>
+                            <div class="scrollable-table">
+                                <div class="card-body">
+                                    <!--begin: Datatable-->
+                                    <table style="background-color: aliceblue;justify-content: center;"
+                                           th:if="${not #lists.isEmpty(filteredResponseList)}"
+                                           class="table table-bordered table-checkable" id="data_table">
+                                        <thead>
+                                        <th class="sm-width">time</th>
+                                        <th class="sm-width">message</th>
+
+                                        <!--                                    <th class="sm-width">Action</th>-->
+                                        <!--                                    <th class="sm-width">Tenure</th>-->
+                                        <!--                                    <th class="sm-width">EMI Start Date</th>-->
+                                        <!--                                    <th class="sm-width">Account</th>-->
+                                        <!--                                    <th class="sm-width">Outstanding Amt</th>-->
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="list : ${filteredResponseList}">
+                                            <td class="sm-width"
+                                                th:text="${#dates.format(list.createDate, 'MMM dd, yyyy @ HH:mm:ss.SSS')}"></td>
+                                            <td class="sm-width" th:text="${list.message}"></td>
+                                        </tr>
+                                        </tbody>
+
+                                    </table>
+                                    <div class="no-scroll">
+                                    <div th:if="${#lists.isEmpty(filteredResponseList)}">
+                                        <img src="/image/img.png" alt="Description" style="width: 1200px; height: 250px;display: block; margin: auto;">
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!--end::Container-->
+                        <!-- -------------------------------------------------------------------------------------------------------- -->
+                    </div>
+
+                    <!-- ---------------------------------------------------------------------------------------------------------------------------------------------->
+                    <!--end::Entry-->
+                </div>
+                <!--end::Content-->
+                <!--begin::Footer-->
+                <div class="footer bg-white py-4 d-flex flex-lg-column" id="kt_footer">
+                    <!--begin::Container-->
+                    <div class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
+                        <!--begin::Copyright-->
+                        <div class="text-dark order-2 order-md-1">
+                            <span class="text-dark-75">Copyright © Saksham Gaur. All rights reserved.</span>
+                        </div>
+                        <!--end::Copyright-->
+                        <!--begin::Nav-->
+                        <div class="nav nav-dark">
+                        </div>
+                        <!--end::Nav-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Footer-->
+            </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Page-->
+    </div>
+    <!--end::Main-->
+
+    <!--begin::Scrolltop-->
+    <div id="kt_scrolltop" class="scrolltop">
+			<span class="svg-icon">
+				<!--begin::Svg Icon | path:assets/media/svg/icons/Navigation/Up-2.svg-->
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                     height="24px" viewBox="0 0 24 24" version="1.1">
+					<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+						<polygon points="0 0 24 0 24 24 0 24"/>
+						<rect fill="#000000" opacity="0.3" x="11" y="10" width="2" height="10" rx="1"/>
+						<path d="M6.70710678,12.7071068 C6.31658249,13.0976311 5.68341751,13.0976311 5.29289322,12.7071068 C4.90236893,12.3165825 4.90236893,11.6834175 5.29289322,11.2928932 L11.2928932,5.29289322 C11.6714722,4.91431428 12.2810586,4.90106866 12.6757246,5.26284586 L18.6757246,10.7628459 C19.0828436,11.1360383 19.1103465,11.7686056 18.7371541,12.1757246 C18.3639617,12.5828436 17.7313944,12.6103465 17.3242754,12.2371541 L12.0300757,7.38413782 L6.70710678,12.7071068 Z"
+                              fill="#000000" fill-rule="nonzero"/>
+					</g>
+				</svg>
+                <!--end::Svg Icon-->
+			</span>
+    </div>
+    <!--end::Scrolltop-->
+    <!--start::MODAL-->
+    <div class="modal fade" id="filterModel" tabindex="-1" role="dialog" aria-labelledby="filterModel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" sec:authorize="hasAnyRole('ROLE_SEARCH_LOG')">
+                    <h5 class="modal-title" id="filterModelLabel">Filter</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div>
+                        <span><div style="text-align:center"><b>Level</b>
+                    </div></span>
+                            <input type="text" class="form-class" placeholder="Enter level"
+                                   id="level" style=" font-size: 15px; width: 450px; "
+                                   th:value="${level}"/>
+                            </span>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div>
+                        <span><div style="text-align:center"><b>Message</b>
+                    </div></span>
+                            <span>
+                        <input type="text" class="form-class" placeholder="Enter message"
+                               id="message" style=" font-size: 15px; width: 450px; "
+                               th:value="${message}"/>
+                        </span>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div>
+                        <span><div style="text-align:center"><b>Resource Id</b>
+                    </div></span>
+                            <span>
+                        <input type="text" class="form-class" placeholder="Enter resourceId"
+                               id="resourceId" style=" font-size: 15px; width: 450px; "
+                               th:value="${resourceId}"/>
+                        </span>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div>
+                        <span><div style="text-align:center"><b>Trace Id</b>
+                    </div></span>
+                            <span>
+                        <input type="text" class="form-class" placeholder="Enter traceId"
+                               id="traceId" style=" font-size: 15px; width: 450px; "
+                               th:value="${traceId}"/>
+                        </span>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div>
+                        <span><div style="text-align:center"><b>Span Id</b>
+                    </div></span>
+                            <span>
+                        <input type="text" class="form-class" placeholder="Enter spanId"
+                               id="spanId" style=" font-size: 15px; width: 450px; "
+                               th:value="${spanId}"/>
+                        </span>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div>
+                        <span><div style="text-align:center"><b>Commit</b>
+                    </div></span>
+                            <span>
+                        <input type="text" class="form-class" placeholder="Enter commit"
+                               id="commit" style=" font-size: 15px; width: 450px; "
+                               th:value="${commit}"/>
+                        </span>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div>
+                        <span><div style="text-align:center"><b>Parent Resource Id</b>
+                    </div></span>
+                            <span>
+                        <input type="text" class="form-class" placeholder="Enter parentResourceId"
+                               id="parentResourceId" style=" font-size: 15px; width: 450px; "
+                               th:value="${parentResourceId}"/>
+                        </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div>
+                        <span><div style="text-align:center"><b>Start Date</b>
+                    </div></span>
+                                <span>
+                        <input type="date" autocomplete="off" id="startDate" placeholder="Start Date"
+                               class="form-control">
+                        </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>
+                        <span><div style="text-align:center"><b>End Date</b>
+                    </div></span>
+                                <span>
+                        <input type="date" autocomplete="off" id="endDate" placeholder="End Date" class="form-control">
+                        </span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" onclick="resetFilter()" class="btn btn-danger">Reset</button>
+                        <button type="button" onclick="filterFunction()" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end::MODAL-->
+
+        <!--begin::Modal Panel-->
+        <script>var HOST_URL = "https://keenthemes.com/metronic/tools/preview";</script>
+        <!--begin::Global Config(global config for global JS scripts)-->
+        <script>
+    var KTAppSettings = { "breakpoints": { "sm": 576, "md": 768, "lg": 992, "xl": 1200, "xxl": 1200 }, "colors": { "theme": { "base": { "white": "#ffffff", "primary": "#3699FF", "secondary": "#E5EAEE", "success": "#1BC5BD", "info": "#8950FC", "warning": "#FFA800", "danger": "#F64E60", "light": "#F3F6F9", "dark": "#212121" }, "light": { "white": "#ffffff", "primary": "#E1F0FF", "secondary": "#ECF0F3", "success": "#C9F7F5", "info": "#EEE5FF", "warning": "#FFF4DE", "danger": "#FFE2E5", "light": "#F3F6F9", "dark": "#D6D6E0" }, "inverse": { "white": "#ffffff", "primary": "#ffffff", "secondary": "#212121", "success": "#ffffff", "info": "#ffffff", "warning": "#ffffff", "danger": "#ffffff", "light": "#464E5F", "dark": "#ffffff" } }, "gray": { "gray-100": "#F3F6F9", "gray-200": "#ECF0F3", "gray-300": "#E5EAEE", "gray-400": "#D6D6E0", "gray-500": "#B5B5C3", "gray-600": "#80808F", "gray-700": "#464E5F", "gray-800": "#1B283F", "gray-900": "#212121" } }, "font-family": "Poppins" };
+
+
+
+        </script>
+        <!--end::Global Config-->
+        <!--begin::Global Theme Bundle(used by all pages)-->
+        <script src="https://cdn.jsdelivr.net/gh/paytail-com/admin-js/plugins.bundle.js?v=7.0.4"></script>
+        <!--    <script src="assets/plugins/custom/prismjs/prismjs.bundle.js?v=7.0.4"></script>-->
+        <script src="https://cdn.jsdelivr.net/gh/paytail-com/admin-js/scripts.bundle.js?v=7.0.4"></script>
+        <link href="https://cdn.jsdelivr.net/gh/paytail-com/admin-js/plugins.bundle.css?v=7.0.4" rel="stylesheet"
+              type="text/css"/>
+        <script th:inline="javascript">
+        </script>
+        <script th:src="@{/./js/logs.js}"></script>
+
+        <!--end::Page Scripts-->
+</body>
+<!--end::Body-->
+</html>
